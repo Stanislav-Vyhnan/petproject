@@ -1,0 +1,32 @@
+.repos__list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+  height: 500px;
+  padding: 15px;
+}
+
+.list__repo__link {
+  width: 100%;
+  border: 4px solid white;
+
+  &:hover {
+    border-color: orange;
+  }
+}
+
+.list__repo__card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.repo__card__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
