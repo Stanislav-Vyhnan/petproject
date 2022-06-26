@@ -36,6 +36,7 @@ const withLoading = (Component: React.ElementType) => {
           getData(`${query}&page=${page}&per_page=30`)
             .then(res => {
               return Promise.all(mapper(res)).then(mapData => {
+                console.log(mapData);
                 setData(prev => [...prev, ...mapData]);
                 setPage((prev: number) => prev + 1);
                 setIsLoading(true);

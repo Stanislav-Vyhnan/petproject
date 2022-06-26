@@ -53,7 +53,6 @@ const FirstScreen: React.FC = () => {
       <ul className="users" ref={usersListRef}>
         {userName.value !== '' ? (
           <UsersList
-            ref={usersListRef}
             page={currentPage}
             setPage={setCurrentPage}
             name={userName}

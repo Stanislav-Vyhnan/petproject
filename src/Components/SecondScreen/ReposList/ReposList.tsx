@@ -7,7 +7,7 @@ import './ReposList.scss';
 
 const ReposList = ({ data }: { data: Repo[] }) => {
   return (
-    <ul className="repos__list">
+    <>
       {data.map(({ id, name, repoUrl, forks, stars }) => (
         <a
           href={repoUrl}
@@ -25,7 +25,7 @@ const ReposList = ({ data }: { data: Repo[] }) => {
           </li>
         </a>
       ))}
-    </ul>
+    </>
   );
 };
 
