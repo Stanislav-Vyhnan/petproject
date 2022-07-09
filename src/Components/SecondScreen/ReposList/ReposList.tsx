@@ -12,11 +12,11 @@ const ReposList = ({ data }: { data: Repo[] }) => {
         <a
           href={repoUrl}
           key={id}
-          className="list__repo__link"
+          className="repo__link"
           target="_blank"
           rel="noreferrer"
         >
-          <li className="list__repo__card">
+          <li className="repo__card">
             <p>{name}</p>
             <div className="repo__card__info">
               <span>{forks} Forks</span>

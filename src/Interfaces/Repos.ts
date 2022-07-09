@@ -9,7 +9,7 @@ export interface Repo extends RepoPart {
   repoUrl: string;
 }
 
-export interface RepoApi extends RepoPart {
+export interface ReposApi extends RepoPart {
   stargazers_count: number;
   html_url: string;
   [key: string]: any;

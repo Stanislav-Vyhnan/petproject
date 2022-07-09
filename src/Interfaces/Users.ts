@@ -1,8 +1,4 @@
-export interface UserEntry {
+export interface UsersApi {
   login: string;
   [key: string]: any;
-}
-
-export interface UsersApi {
-  items: UserEntry[];
 }

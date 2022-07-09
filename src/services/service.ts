@@ -3,17 +3,22 @@ import headers from '../constants/gitHubSettings';
 
 import { UsersApi } from '../Interfaces/Users';
 import { ProfileApi } from '../Interfaces/Profile';
-import { RepoApi } from '../Interfaces/Repos';
+import { ReposApi } from '../Interfaces/Repos';
 
 const api = 'https://api.github.com/';
 
-export const getData = async (query: string) => {
+export const getData = async (
+  query: string,
+  page: number,
+): Promise<ReposApi[] | UsersApi[]> => {
   const users = await axios
-    .get<UsersApi | RepoApi>(`${api}search/${query}`, {
-      headers,
-    })
+    .get<UsersApi | ReposApi>(
+      `${api}search/${query}&page=${page}&per_page=30`,
+      {
+        headers,
+      },
+    )
     .then(({ data }) => {
-      console.info(...data.items);
       return data.items;
     });
   return users;

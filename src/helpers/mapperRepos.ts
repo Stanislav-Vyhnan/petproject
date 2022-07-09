@@ -1,7 +1,7 @@
-import { RepoApi, Repo } from '../Interfaces/Repos';
+import { ReposApi, Repo } from '../Interfaces/Repos';
 
-const mapperRepos = (items: RepoApi[]): Repo[] =>
-  items.map((repoApi: RepoApi) => {
+const mapperRepos = (items: ReposApi[]): Repo[] =>
+  items.map((repoApi: ReposApi) => {
     const {
       id,
       name,

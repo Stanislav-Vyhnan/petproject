@@ -1,4 +1,4 @@
-.repos__list {
+.repos {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,7 +9,7 @@
   padding: 15px;
 }
 
-.list__repo__link {
+.repo__link {
   width: 100%;
   border: 4px solid white;
 
@@ -18,7 +18,7 @@
   }
 }
 
-.list__repo__card {
+.repo__card {
   display: flex;
   align-items: center;
   justify-content: space-between;

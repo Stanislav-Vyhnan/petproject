@@ -1,16 +1,19 @@
 import { Profile } from './Profile';
-import { Repo, RepoApi } from './Repos';
-import { UserEntry } from './Users';
+import { Repo, ReposApi } from './Repos';
+import { UsersApi } from './Users';
 
 export default interface HocProps {
   name: { value: string; isStorage: boolean };
   storageKey: string;
   query: string;
-  mapper: <T extends UserEntry[] | RepoApi, U extends Repo | Profile>(
+  mapper: <
+    T extends (UsersApi | ReposApi)[],
+    U extends (Promise<Profile> | Repo)[],
+  >(
     data: T,
-  ) => T | U;
+  ) => U;
   page: number;
-  setPage: any;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
   fetching: boolean;
-  setFetching: any;
+  setFetching: React.Dispatch<React.SetStateAction<boolean>>;
 }

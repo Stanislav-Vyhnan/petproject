@@ -1,64 +1,81 @@
-import React, { useEffect, useState, forwardRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import Loading from '../Components/Loading/Loading';
 
 import { getData } from '../services/service';
+
 import { Profile } from '../Interfaces/Profile';
 import HocProps from '../Interfaces/HocLoading';
 import { Repo } from '../Interfaces/Repos';
 
+import deleteDuplicates from '../helpers/deleteDuplicates';
+import scrollEventControll from '../helpers/scrollEventControll';
+import clearUserStorage from '../helpers/clearUserStorage';
+
 const withLoading = (Component: React.ElementType) => {
-  const HocComponent: React.ElementType = forwardRef<
-    HTMLUListElement,
-    HocProps
-  >(
-    (
-      { name, storageKey, query, mapper, page, setPage, fetching, setFetching },
-      ref,
-    ) => {
-      const [isLoading, setIsLoading] = useState(false);
-      const [data, setData] = useState<Profile[] | Repo[]>([]);
+  const HocComponent: React.ElementType = ({
+    name,
+    storageKey,
+    query,
+    mapper,
+  }: HocProps) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [data, setData] = useState<(Profile | Repo)[]>([]);
+    const listRef = useRef<HTMLUListElement>(null);
 
-      useEffect(() => {
-        setData(JSON.parse(localStorage.getItem(`${storageKey}s`) || 'false'));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, []);
+    const [fetching, setFetching] = useState(false);
 
-      useEffect(() => {
-        setData([]);
-      }, [query]);
+    useEffect(() => {
+      clearUserStorage();
+      setData([]);
+      setCurrentPage(1);
+      setFetching(true);
+    }, [name.value]);
 
-      useEffect(() => {
+    useEffect(() => {
+      return scrollEventControll(listRef, fetching, setFetching);
+    }, []);
+
+    useEffect(() => {
+      setData(JSON.parse(localStorage.getItem(`${storageKey}s`) || 'false'));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+      setIsLoading(true);
+      if (name.isStorage) {
         setIsLoading(false);
-        if (name.isStorage) {
-          setIsLoading(true);
-        } else if (fetching) {
-          getData(`${query}&page=${page}&per_page=30`)
-            .then(res => {
-              return Promise.all(mapper(res)).then(mapData => {
-                console.log(mapData);
-                setData(prev => [...prev, ...mapData]);
-                setPage((prev: number) => prev + 1);
-                setIsLoading(true);
-                localStorage.setItem(`${storageKey}s`, JSON.stringify(mapData));
-                localStorage.setItem(`${storageKey}Name`, name.value);
-              });
-            })
-            .finally(() => setFetching(false));
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [fetching]);
+      } else if (fetching) {
+        getData(query, currentPage).then(res => {
+          Promise.all(mapper(res)).then(mapedData => {
+            const withOutDuplicates = deleteDuplicates(data, mapedData);
 
-      return isLoading ? (
+            setData(withOutDuplicates);
+            setCurrentPage(currentPage + 1);
+            setIsLoading(false);
+
+            localStorage.setItem(
+              `${storageKey}s`,
+              JSON.stringify(withOutDuplicates),
+            );
+            localStorage.setItem(`${storageKey}Name`, name.value);
+          });
+        });
+      }
+
+      setFetching(false);
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fetching]);
+
+    return (
+      <ul ref={listRef} className={`${storageKey}s`}>
         <Component data={data} />
-      ) : (
-        <>
-          <Component data={data} />
-          <Loading />
-        </>
-      );
-    },
-  );
+        {isLoading && <Loading />}
+      </ul>
+    );
+  };
 
   return HocComponent;
 };
@@ -68,35 +85,63 @@ export default withLoading;
 /*
 
 const withLoading = (Component: React.ElementType) => {
-  const HocComponent: React.ElementType = forwardRef<
-    HTMLUListElement,
-    HocProps
-  >(({ name, storageKey, query, mapper, page, fetching }, ref) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [data, setData] = useState<Profile[] | Repo[]>(
-      JSON.parse(localStorage.getItem(`${storageKey}s`) || 'false') || [],
-    );
+  const HocComponent: React.ElementType = ({
+    name,
+    storageKey,
+    query,
+    mapper,
+    page,
+    setPage,
+    fetching,
+    setFetching,
+  }: HocProps) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [data, setData] = useState<(Profile | Repo)[]>([]);
+
+    useEffect(() => {
+      setData(JSON.parse(localStorage.getItem(`${storageKey}s`) || 'false'));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useLayoutEffect(() => {
+      setData([]);
+    }, [query]);
 
     useEffect(() => {
       console.log(fetching);
-      setIsLoading(false);
+      setIsLoading(true);
       if (name.isStorage) {
-        setIsLoading(true);
-      } else {
-        getData(`${query}+&page=${page}&+per_page=30`).then(res => {
-          return Promise.all(mapper(res)).then(mapData => {
-            setData((prev): any => [...prev, ...mapData]);
-            setIsLoading(true);
-            localStorage.setItem(`${storageKey}s`, JSON.stringify(mapData));
+        setIsLoading(false);
+      } else if (fetching) {
+        getData(query, page).then(res => {
+          Promise.all(mapper(res)).then(mapedData => {
+            const withOutDuplicates = deleteDuplicates(data, mapedData);
+
+            setData(withOutDuplicates);
+            setPage(page + 1);
+            setIsLoading(false);
+
+            localStorage.setItem(
+              `${storageKey}s`,
+              JSON.stringify(withOutDuplicates),
+            );
             localStorage.setItem(`${storageKey}Name`, name.value);
           });
         });
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [query, fetching]);
 
-    return isLoading ? <Component data={data} /> : <Loading />;
-  });
+      setFetching(false);
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fetching]);
+
+    return (
+      <>
+        <Component data={data} />
+        {isLoading && <Loading />}
+      </>
+    );
+  };
 
   return HocComponent;
 };

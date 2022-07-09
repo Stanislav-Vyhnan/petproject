@@ -1,9 +1,9 @@
-import { UserEntry } from '../Interfaces/Users';
+import { UsersApi } from '../Interfaces/Users';
 import { Profile } from '../Interfaces/Profile';
 import { getUserProfile } from '../services/service';
 
-const mapperUsers = (items: UserEntry[]): Promise<Profile>[] =>
-  items.map(user =>
+const mapperUsers = (items: UsersApi[]): Promise<Profile>[] =>
+  items.map((user: UsersApi) =>
     getUserProfile(user.login).then(profile => {
       const {
         id,
