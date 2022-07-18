@@ -1,29 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+
+import {
+  addRequiredUserName,
+  selectRequiredUserName,
+  selectUsers,
+} from '../../store/features/usersSlice';
 
 import UsersList from './UsersList/UsersList';
 
 import InputName from '../InputName/InputName';
 
-import mapperUsers from '../../helpers/mapperUsers';
+import { mapperUsers } from '../../helpers/mapperUsers';
 
 import './FirstScreen.scss';
 
 const FirstScreen: React.FC = () => {
-  const nameStorage = localStorage.getItem('userName');
-  const [userName, setUserName] = useState(
-    nameStorage
-      ? { isStorage: true, value: nameStorage }
-      : { isStorage: false, value: '' },
-  );
+  const dispatch = useAppDispatch();
+  const users = useAppSelector(selectUsers);
+  const areUsers = useRef<{ value: boolean }>({
+    value: !!users.length,
+  });
+  const requiredUserName = useAppSelector(selectRequiredUserName);
+
+  const [userName, setUserName] = useState(requiredUserName);
+
+  useEffect(() => {
+    areUsers.current.value = !!users.length;
+  }, []);
+
+  useEffect(() => {
+    dispatch(addRequiredUserName(userName));
+  }, [userName]);
 
   return (
     <div className="first-screen">
       <InputName name={userName} setName={setUserName} classStyle="" />
-      {userName.value !== '' ? (
+      {userName !== '' ? (
         <UsersList
+          initializationData={users}
+          isFastLoading={areUsers}
           name={userName}
           storageKey="user"
-          query={`users?q=${userName.value}+in:name`}
+          query={`users?q=${userName}+in:name`}
           mapper={mapperUsers}
         />
       ) : (

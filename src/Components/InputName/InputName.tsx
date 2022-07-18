@@ -6,17 +6,11 @@ const InputName = ({
   setName,
   classStyle,
 }: {
-  name: { value: string; isStorage: boolean };
-  setName: ({
-    value,
-    isStorage,
-  }: {
-    value: string;
-    isStorage: boolean;
-  }) => void;
+  name: string;
+  setName: (value: string) => void;
   classStyle: string;
 }) => {
-  const [requiredName, setRequiredName] = useState(name.value);
+  const [requiredName, setRequiredName] = useState(name);
 
   const requiredNameOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -24,16 +18,12 @@ const InputName = ({
   };
 
   useEffect(() => {
-    if (name.isStorage) {
-      setName({ ...name, isStorage: false });
-    } else {
-      const timeoutId: ReturnType<typeof setTimeout> = addSetTimeout(
-        requiredName,
-        setName,
-      );
-      return () => deleteSetTimeout(timeoutId);
-    }
-    return undefined;
+    const timeoutId: ReturnType<typeof setTimeout> = addSetTimeout(
+      requiredName,
+      setName,
+    );
+    return () => deleteSetTimeout(timeoutId);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [requiredName]);
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import ReposList from './ReposList/ReposList';
@@ -6,21 +6,30 @@ import InputName from '../InputName/InputName';
 
 import './SecondScreen.scss';
 import mapperRepos from '../../helpers/mapperRepos';
-import getUserProfile from '../../helpers/getUserProfile';
+import getIndexUser from '../../helpers/getIndexUser';
+
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { selectUsers } from '../../store/features/usersSlice';
+import { selectUser } from '../../store/features/userSlice';
 
 const noInfo = 'No information available';
 
 const SecondScreen = () => {
-  const repoNameStorage = localStorage.getItem('repoName');
-  const { id } = useParams();
-  const { avatarUrl, name, login, userInfo, followers, following, bio } =
-    getUserProfile(id);
+  const dispatch = useAppDispatch();
+  const users = useAppSelector(selectUsers);
 
-  const [repoName, setRepoName] = useState(
-    repoNameStorage
-      ? { isStorage: true, value: repoNameStorage }
-      : { isStorage: false, value: '' },
-  );
+  const login = useParams().login || '';
+  const profile = useAppSelector(selectUser);
+  const [userProfile, setUserProfile] = useState(profile);
+
+  const { avatarUrl, name, userInfo, followers, following, bio } = userProfile;
+
+  const [repoName, setRepoName] = useState('');
+
+  useEffect(() => {
+    const indexOfUser = getIndexUser(users, login, dispatch);
+    if (indexOfUser !== -1) setUserProfile(users[indexOfUser]);
+  }, [users]);
 
   return (
     <div className="user">
@@ -45,7 +54,7 @@ const SecondScreen = () => {
         name={repoName}
         storageKey="repo"
         query={`repositories?q=${
-          repoName.value === '' ? '' : `${repoName.value}in:name&`
+          repoName === '' ? '' : `${repoName}in:name&`
         }user:${login}`}
         mapper={mapperRepos}
       />

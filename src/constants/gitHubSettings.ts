@@ -1,4 +1,5 @@
 const headers = {
-  Authorization: `token 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`,
+  Accept: 'application/vnd.github+json',
+  Authorization: `token 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`,
 };
 export default headers;

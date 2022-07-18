@@ -1,8 +1,8 @@
-const deleteDuplicates = <T extends { id: number }>(
-  data: T[],
-  apiData: T[],
-): T[] => {
-  const dataWithoutDuplicates = new Map();
+import { Profile } from '../Interfaces/Profile';
+import { Repo } from '../Interfaces/Repos';
+
+const deleteDuplicates = <T>(data: T[], apiData: T[]): T[] => {
+  const dataWithoutDuplicates = new Map<number, Profile | Repo>();
   const combinedData = data.concat(apiData);
 
   for (let i = 0; i < combinedData.length; i += 1) {

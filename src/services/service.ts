@@ -7,7 +7,7 @@ import { ReposApi } from '../Interfaces/Repos';
 
 const api = 'https://api.github.com/';
 
-export const getData = async (
+export const getDataAPI = async (
   query: string,
   page: number,
 ): Promise<ReposApi[] | UsersApi[]> => {
@@ -24,7 +24,7 @@ export const getData = async (
   return users;
 };
 
-export const getUserProfile = async (userName: string) => {
+export const getUserProfileAPI = async (userName: string) => {
   const users = await axios
     .get<ProfileApi>(`${api}users/${userName}`, { headers })
     .then(({ data }) => {

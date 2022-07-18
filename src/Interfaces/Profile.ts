@@ -1,5 +1,5 @@
 export interface ProfilePart {
-  id: number;
+  id: number | null;
   name: string | null;
   login: string;
   followers: number;

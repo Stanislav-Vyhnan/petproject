@@ -1,9 +1,17 @@
 import { RefObject } from 'react';
 
-const scrollEventControll = (
-  ulListRef: RefObject<HTMLUListElement>,
-  fetching: boolean,
-  setFetching: (value: boolean) => void,
+type ScrollEventControll = {
+  (
+    ulListRef: RefObject<HTMLUListElement>,
+    fetching: boolean,
+    setFetching: (value: boolean) => void,
+  ): (() => void) | undefined;
+};
+
+const scrollEventControll: ScrollEventControll = (
+  ulListRef,
+  fetching,
+  setFetching,
 ) => {
   const scrollHandler = (event: Event, setFetch: (value: boolean) => void) => {
     const e = event.target as HTMLInputElement;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, BrowserRouter, Route } from 'react-router-dom';
+import { Routes, BrowserRouter, Route, Navigate, Link } from 'react-router-dom';
 
 import './App.scss';
 
@@ -8,15 +8,18 @@ import SecondScreen from '../SecondScreen/SecondScreen';
 
 const App = () => {
   return (
-    <div className="app">
-      <h1>GitHub Searcher</h1>
-      <BrowserRouter>
+    <BrowserRouter>
+      <div className="app">
+        <Link to="/">
+          <h1>GitHub Searcher</h1>
+        </Link>
         <Routes>
           <Route path="" element={<FirstScreen />} />
-          <Route path="user/:id" element={<SecondScreen />} />
+          <Route path="user/:login" element={<SecondScreen />} />
+          <Route path="*" element={<Navigate to="" replace />} />
         </Routes>
-      </BrowserRouter>
-    </div>
+      </div>
+    </BrowserRouter>
   );
 };
 
